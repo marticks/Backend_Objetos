@@ -1,0 +1,14 @@
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\bin\Debug\netcoreapp2.1\WebApiObjetos.deps.json
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\bin\Debug\netcoreapp2.1\WebApiObjetos.runtimeconfig.json
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\bin\Debug\netcoreapp2.1\WebApiObjetos.runtimeconfig.dev.json
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\bin\Debug\netcoreapp2.1\WebApiObjetos.dll
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\bin\Debug\netcoreapp2.1\WebApiObjetos.pdb
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.csprojAssemblyReference.cache
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.csproj.CoreCompileInputs.cache
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.RazorAssemblyInfo.cache
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.RazorAssemblyInfo.cs
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.AssemblyInfoInputs.cache
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.AssemblyInfo.cs
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.RazorTargetAssemblyInfo.cache
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.dll
+C:\Users\alejandro.gonzalez\Projects\WebApiObjetos\WebApiObjetos\obj\Debug\netcoreapp2.1\WebApiObjetos.pdb
