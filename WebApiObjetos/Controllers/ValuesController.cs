@@ -26,8 +26,9 @@ namespace WebApiObjetos.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult<string> Post([FromBody] string value)
         {
+            return Ok(value+"sas");
         }
 
         // PUT api/values/5

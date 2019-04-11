@@ -7,5 +7,13 @@ namespace WebApiObjetos.Services.Interfaces
 {
     public interface ILocationService
     {
+        void GetLocations();
+
+        void GetLocation();
+
+        void DeleteLocation();
+
+        void ModifyLocation();
+
     }
 }

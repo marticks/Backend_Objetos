@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebApiObjetos.Data;
+using WebApiObjetos.Models.Repositories;
+using WebApiObjetos.Models.Repositories.Interfaces;
 using WebApiObjetos.Services;
 using WebApiObjetos.Services.Interfaces;
 
@@ -37,19 +39,16 @@ namespace WebApiObjetos
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            /* using (var context = new ApplicationDBContext())
-             {
-                 context.Database.EnsureCreated(); // te aseguras que exista la base
-             }
-             */
-            services.AddDbContext<ApplicationDBContext>(options =>
-            options.UseSqlServer(Configuration["MyConnStr"]));
+       
+            services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnStr")));
 
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<DbContext, ApplicationDBContext>();
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ILocationRepository,LocationRepository>();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);//.AddXmlDataContractSerializerFormatters(); con esto si seteas en el header del request el tipo en que queres que te devuelva la info esto lo formatea solo
+                                                                                        //Accept tipo;  // tambien podes setear que formato queres que te devuelta cada método poniendo [Produces("formato")]
 
         }
 

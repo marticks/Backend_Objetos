@@ -9,7 +9,26 @@ namespace WebApiObjetos.Services
     public class LocationService : ILocationService
     {
         //private IRepositoryLocation locationRepo;
-        public int Id { get; set; }
+
+        public void DeleteLocation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetLocation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetLocations()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ModifyLocation()
+        {
+            throw new NotImplementedException();
+        }
 
 
         /* public Geo Geo { get; set; }*/

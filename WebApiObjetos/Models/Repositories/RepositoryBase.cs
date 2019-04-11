@@ -3,33 +3,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApiObjetos.Data;
 using WebApiObjetos.Models.Repositories.Interfaces;
 
 namespace WebApiObjetos.Models.Repositories
 {
-    public class RepositoryBase<TEntity> : IRepository <TEntity> where TEntity : class
+    public class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private DbContext dbContext;
+        protected DbContext applicationDbContext;
 
         public RepositoryBase(DbContext dbContext)
         {
-            this.dbContext = dbContext;
+            this.applicationDbContext = dbContext;
         }
 
-        public void Add(TEntity entity)
+        public async virtual Task Add(TEntity entity)
         {
-            //using (var context = new ApplicationDBContext(DbContextOptions < DbContex > options)) //// esta inyección de dependencias ya la hace ? ///ya tengo el DB CONTEXT, NO USAR USING CARA DE VERGA
-            //{ }
-            throw new NotImplementedException();
+            try
+            {
+                applicationDbContext.Add<TEntity>(entity);
+                await applicationDbContext.SaveChangesAsync();//debería usar savechanges async ? rta:tengo que hacer todo asyncrono hasta el controller y ya funca
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         public void Delete(TEntity entity)
         {
+            //applicationDbContext.en
+
             throw new NotImplementedException();
         }
 
         public TEntity Get(long id)
         {
+
             throw new NotImplementedException();
         }
 
@@ -38,6 +47,11 @@ namespace WebApiObjetos.Models.Repositories
 
             //dbContext
 
+            throw new NotImplementedException();
+        }
+
+        public TEntity GetById(long id)
+        {
             throw new NotImplementedException();
         }
 
