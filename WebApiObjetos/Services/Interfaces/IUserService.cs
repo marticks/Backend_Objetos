@@ -13,6 +13,6 @@ namespace WebApiObjetos.Services.Interfaces
 
          Task SignIn(User user);
 
-         void DeleteUser();
+         Task DeleteUser(User user);
     }
 }

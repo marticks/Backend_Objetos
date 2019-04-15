@@ -8,6 +8,6 @@ namespace WebApiObjetos.Models.Repositories.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-      
+        Task<User> GetUser(User user);
     }
 }

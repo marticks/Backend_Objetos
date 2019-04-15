@@ -22,13 +22,13 @@ namespace WebApiObjetos.Controllers
 
 
         [Route("login")]
-        public IActionResult Login(UserDTO user)
+        public async Task<IActionResult> Login(User user)
         {
             if (!ModelState.IsValid)
                 throw new InvalidOperationException("Invalid Model");//esta excepcion es usada cuando se trata de realizar una operación con un objeto 
                                                                      //con un estado invalido, creo que va bien como excepcion para este caso 
-            userService.Login();
-            return Ok("logeo papa");
+            await userService.Login(user);
+            return Ok("logeo papa, retornar token");
         }
 
         [Route("SignIn")]
@@ -40,6 +40,18 @@ namespace WebApiObjetos.Controllers
 
             await userService.SignIn(user);
             return Ok("El usuario ha sido registrado exitosamente");
+        }
+
+        [Route("Delete")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser([FromBody] User user)
+            {
+            if (!ModelState.IsValid)
+                throw new InvalidOperationException("Invaid Model");
+
+            await userService.DeleteUser(user);
+
+            return Ok("Su usuario ha sido eliminado exitosamente");
         }
 
 

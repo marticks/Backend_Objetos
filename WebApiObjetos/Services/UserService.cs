@@ -20,20 +20,33 @@ namespace WebApiObjetos.Services
         }
 
 
-        public void DeleteUser()
+        public async Task DeleteUser(User user)
         {
-            throw new NotImplementedException();
+            /*
+            int id = 1;
+            user = userRepo.GetById(id); esto era una prueba y funciona bien el getbyId
+            */
+
+            user = await userRepo.GetUser(user);
+
+            await userRepo.Delete(user);
         }
 
-        public void Login()
+        public async Task Login(User user)
         {
-            //userRepo.Add()
-            throw new NotImplementedException();
+            var result = await userRepo.GetUser(user);
+            if (result != null)
+                return;
+                //generar token y devolverlo
         }
 
         public async Task SignIn(User user)
         {
            await userRepo.Add(user);
         }
+
+        
+
+
     }
 }

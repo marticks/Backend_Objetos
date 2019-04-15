@@ -14,8 +14,27 @@ namespace WebApiObjetos.Models.Repositories
     {
         public UserRepository(DbContext dbContext) : base(dbContext){}
 
+
         //aca debería tener las consultas específicas(devolveme los 10 primeros ordenados por X y eso.)
         //no creo que se pueda hacer con una lambda como el where.
-        //un get con ciertas características tampoco se puede hacer, dame todas las empresas con organization = 10 y eso.
+
+        public async Task<User> GetUser(User user)
+        {
+           
+            /// tengo problema porque el repository base es un dbcontext entonces no puedo acceder a User.
+            /// Preguntar si la solucion con set esta bien.
+            //var result = applicationDbContext.Find<User>(id);
+
+            var result = await applicationDbContext.Set<User>().
+                Where(x => x.UserName.Equals(user.UserName) && x.Password.Equals(user.Password)).FirstOrDefaultAsync<User>();
+
+            applicationDbContext.SaveChanges();
+            return result;
+
+        }
+
+
+
+
     }
 }

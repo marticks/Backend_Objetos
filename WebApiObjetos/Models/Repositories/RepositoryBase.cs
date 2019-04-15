@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApiObjetos.Data;
+using WebApiObjetos.Models.Entities;
 using WebApiObjetos.Models.Repositories.Interfaces;
 
 namespace WebApiObjetos.Models.Repositories
@@ -29,35 +30,38 @@ namespace WebApiObjetos.Models.Repositories
             }
         }
 
-        public void Delete(TEntity entity)
+        public async Task Delete(TEntity entity)
         {
-            //applicationDbContext.en
-
-            throw new NotImplementedException();
-        }
-
-        public TEntity Get(long id)
-        {
-
-            throw new NotImplementedException();
+            try
+            {
+                applicationDbContext.Remove<TEntity>(entity);
+                await applicationDbContext.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
         }
 
         public IEnumerable<TEntity> GetAll()
         {
-
+          /* var Users = applicationDbContext.Users.ToList();
+            applicationDbContext.Model.
+           return Users;
             //dbContext
-
-            throw new NotImplementedException();
-        }
-
-        public TEntity GetById(long id)
-        {
+            */
             throw new NotImplementedException();
         }
 
         public void Update(TEntity dbEntity, TEntity entity)
         {
             throw new NotImplementedException();
+        }
+
+        TEntity IRepository<TEntity>.GetById(int id)
+        {
+            var result = applicationDbContext.Find<TEntity>(id);
+            return result ;
         }
     }
 }

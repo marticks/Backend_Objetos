@@ -15,6 +15,10 @@ namespace WebApiObjetos.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+
+        /// <summary>
+        /// /esta clase hay que borrarla, generada por scaffolding, ta buena para guiarse los métodos básicos.
+        /// </summary>
         private readonly ApplicationDBContext _context;
 
         public UsersController(ApplicationDBContext context)

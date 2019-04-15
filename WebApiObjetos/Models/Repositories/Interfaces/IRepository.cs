@@ -8,9 +8,9 @@ namespace WebApiObjetos.Models.Repositories.Interfaces
     public interface IRepository<TEntity>
     {
         IEnumerable<TEntity> GetAll();
-        TEntity GetById(long id);
+        TEntity GetById(int id);
         Task Add(TEntity entity);
         void Update(TEntity dbEntity, TEntity entity);
-        void Delete(TEntity entity);
+        Task Delete(TEntity entity);
     }
 }
