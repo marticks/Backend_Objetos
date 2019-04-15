@@ -37,7 +37,7 @@ namespace WebApiObjetos.Models.Repositories
                 applicationDbContext.Remove<TEntity>(entity);
                 await applicationDbContext.SaveChangesAsync();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -45,11 +45,11 @@ namespace WebApiObjetos.Models.Repositories
 
         public IEnumerable<TEntity> GetAll()
         {
-          /* var Users = applicationDbContext.Users.ToList();
-            applicationDbContext.Model.
-           return Users;
-            //dbContext
-            */
+            /* var Users = applicationDbContext.Users.ToList();
+              applicationDbContext.Model.
+             return Users;
+              //dbContext
+              */
             throw new NotImplementedException();
         }
 
@@ -61,7 +61,7 @@ namespace WebApiObjetos.Models.Repositories
         TEntity IRepository<TEntity>.GetById(int id)
         {
             var result = applicationDbContext.Find<TEntity>(id);
-            return result ;
+            return result;
         }
     }
 }

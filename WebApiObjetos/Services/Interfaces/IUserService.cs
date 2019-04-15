@@ -9,10 +9,10 @@ namespace WebApiObjetos.Services.Interfaces
     public interface IUserService
     {
 
-         void Login();
+        Task Login(User user);
 
-         Task SignIn(User user);
+        Task SignIn(User user);
 
-         Task DeleteUser(User user);
+        Task DeleteUser(User user);
     }
 }

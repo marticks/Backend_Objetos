@@ -37,15 +37,15 @@ namespace WebApiObjetos.Services
             var result = await userRepo.GetUser(user);
             if (result != null)
                 return;
-                //generar token y devolverlo
+            //generar token y devolverlo
         }
 
         public async Task SignIn(User user)
         {
-           await userRepo.Add(user);
+            await userRepo.Add(user);
         }
 
-        
+
 
 
     }

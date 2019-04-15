@@ -12,7 +12,7 @@ namespace WebApiObjetos.Models.Repositories
     // Hereda de repositoryBase e implementa UserRepository para consultas específicas.
     public class UserRepository : RepositoryBase<User>, IUserRepository
     {
-        public UserRepository(DbContext dbContext) : base(dbContext){}
+        public UserRepository(DbContext dbContext) : base(dbContext) { }
 
 
         //aca debería tener las consultas específicas(devolveme los 10 primeros ordenados por X y eso.)
@@ -20,7 +20,7 @@ namespace WebApiObjetos.Models.Repositories
 
         public async Task<User> GetUser(User user)
         {
-           
+
             /// tengo problema porque el repository base es un dbcontext entonces no puedo acceder a User.
             /// Preguntar si la solucion con set esta bien.
             //var result = applicationDbContext.Find<User>(id);
@@ -31,10 +31,9 @@ namespace WebApiObjetos.Models.Repositories
             applicationDbContext.SaveChanges();
             return result;
 
+            //myContext.HugeEntity.Select(entity => new { entity.FirstName, entity.Address1 }); 
+            //con esto podes realizar busquedas sin traerte todas las columnas de la tabla (anonymous types)
         }
-
-
-
 
     }
 }

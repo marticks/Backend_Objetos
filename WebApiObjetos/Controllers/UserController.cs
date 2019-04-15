@@ -45,7 +45,7 @@ namespace WebApiObjetos.Controllers
         [Route("Delete")]
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody] User user)
-            {
+        {
             if (!ModelState.IsValid)
                 throw new InvalidOperationException("Invaid Model");
 
