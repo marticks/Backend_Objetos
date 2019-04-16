@@ -27,7 +27,10 @@ namespace WebApiObjetos.Controllers
             if (!ModelState.IsValid)
                 throw new InvalidOperationException("Invalid Model");//esta excepcion es usada cuando se trata de realizar una operación con un objeto 
                                                                      //con un estado invalido, creo que va bien como excepcion para este caso 
-            await userService.Login(user);
+            var obtainedUser = await userService.Login(user);
+
+            if (obtainedUser == null)
+                return NotFound();
             return Ok("logeo papa, retornar token");
         }
 
@@ -38,7 +41,10 @@ namespace WebApiObjetos.Controllers
             if (!ModelState.IsValid)
                 throw new InvalidOperationException("Invaid Model");
 
-            await userService.SignIn(user);
+           var success = await userService.SignIn(user);
+            if (!success)
+                return Conflict("El usuario ya existe");
+
             return Ok("El usuario ha sido registrado exitosamente");
         }
 
@@ -53,7 +59,5 @@ namespace WebApiObjetos.Controllers
 
             return Ok("Su usuario ha sido eliminado exitosamente");
         }
-
-
     }
 }

@@ -32,17 +32,21 @@ namespace WebApiObjetos.Services
             await userRepo.Delete(user);
         }
 
-        public async Task Login(User user)
+        public async Task<User> Login(User user)
         {
             var result = await userRepo.GetUser(user);
-            if (result != null)
-                return;
+            return result;
             //generar token y devolverlo
         }
 
-        public async Task SignIn(User user)
+        public async Task<bool> SignIn(User user)
         {
+            var existingUser = userRepo.GetUser(user);
+            if (existingUser != null)
+                return false;
+
             await userRepo.Add(user);
+            return true;
         }
 
 
