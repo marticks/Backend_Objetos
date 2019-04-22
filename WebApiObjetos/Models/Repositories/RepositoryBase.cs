@@ -27,6 +27,7 @@ namespace WebApiObjetos.Models.Repositories
             }
             catch (Exception e)
             {
+                throw e;
             }
         }
 

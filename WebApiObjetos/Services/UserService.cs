@@ -41,7 +41,7 @@ namespace WebApiObjetos.Services
 
         public async Task<bool> SignIn(User user)
         {
-            var existingUser = userRepo.GetUser(user);
+            var existingUser = await userRepo.GetUser(user);
             if (existingUser != null)
                 return false;
 

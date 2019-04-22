@@ -20,17 +20,18 @@ namespace WebApiObjetos.Models.Repositories
 
         public async Task<User> GetUser(User user)
         {
+            try
+            {
+                var result = await applicationDbContext.Set<User>().
+                    Where(x => x.UserName.Equals(user.UserName)).FirstOrDefaultAsync<User>();
 
-            /// tengo problema porque el repository base es un dbcontext entonces no puedo acceder a User.
-            /// Preguntar si la solucion con set esta bien.
-            //var result = applicationDbContext.Find<User>(id);
-
-            var result = await applicationDbContext.Set<User>().
-                Where(x => x.UserName.Equals(user.UserName) && x.Password.Equals(user.Password)).FirstOrDefaultAsync<User>();
-
-            applicationDbContext.SaveChanges();
-            return result;
-
+                applicationDbContext.SaveChanges();
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
             //myContext.HugeEntity.Select(entity => new { entity.FirstName, entity.Address1 }); 
             //con esto podes realizar busquedas sin traerte todas las columnas de la tabla (anonymous types)
         }
