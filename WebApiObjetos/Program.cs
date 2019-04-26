@@ -19,6 +19,12 @@ namespace WebApiObjetos
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+            .UseKestrel(options =>
+                {
+                    options.AddServerHeader = false;
+                });
+
+        //kestrel es el default web server, esta bueno no devolver que server estas corriendo para no dar info extra
     }
 }

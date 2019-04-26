@@ -13,6 +13,9 @@ using System.Text;
 using System.Security.Claims;
 using WebApiObjetos.Properties;
 using System.Resources;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebApiObjetos.Controllers
 {
@@ -44,19 +47,29 @@ namespace WebApiObjetos.Controllers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Resources.Encription_Key));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            
+            /*
             var claim = new[] {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
             // podes agregar otras sub y claims, es un arreglo, pero es mejor crear una claim nueva y chau.
             new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Sub,"sass"),
+            new Claim(ClaimTypes.Role,"admin"),
             new Claim("edad", "user.edad")
     };
+    //original.
+    */
+
+
+
+            var claimsss = new ClaimsIdentity(new[] {new Claim(JwtRegisteredClaimNames.Sub,user.UserName) },CookieAuthenticationDefaults.AuthenticationScheme); //para tener en cuenta.
+            var principal = new ClaimsPrincipal(claimsss);
 
             var token = new JwtSecurityToken(
                 issuer: Resources.Issuer,
                 audience: Resources.Audience,
-                claims: claim,
+                claims: claimsss,
                 expires: DateTime.UtcNow.AddHours(Int32.Parse(Resources.Token_Duration)),
                 signingCredentials: cred
                 );
@@ -68,6 +81,8 @@ namespace WebApiObjetos.Controllers
                 Token = new JwtSecurityTokenHandler().WriteToken(token)
         };
 
+            //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, principal); agregado para mirar mañana
+            await HttpContext.SignOutAsync(JwtBearerDefaults.AuthenticationScheme);
 
             return Ok(userdto);
         }
@@ -90,6 +105,8 @@ namespace WebApiObjetos.Controllers
 
 
         [Route("Delete")]
+        [ValidateAntiForgeryToken] // se ve que todas las forms tienen un token autogenerado, que necesitas validar de este lado con esta linea, asi evitas que otra página suba una form aca. 
+        //[RequireHttps]//obliga a conectarse por https y sino te fuerza a hacerlo. habilitar firma ssl en properties
         [HttpDelete,Authorize]
         public async Task<IActionResult> DeleteUser([FromBody] User user)
         {

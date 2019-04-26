@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +47,7 @@ namespace WebApiObjetos
             });
 
             services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnStr")));
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // aca seteas la autenticación por default que queres que se utilice
             .AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = false;
@@ -60,12 +62,20 @@ namespace WebApiObjetos
                     RequireExpirationTime = true,
                     ValidateAudience = true,
                     ValidAudience = Resources.Audience,
-                    ValidateIssuer= true,
+                    ValidateIssuer = true,
                     ValidIssuer = Resources.Issuer
 
                 };
-            });
+            }); // podes setear las otras formas de autenticación al hilo aca, con un . add ...
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", adminoptions =>
+                 {
+                     adminoptions.RequireAuthenticatedUser().RequireRole("Admin");
+                 });
+
+            });
             /*
             services.AddCors(options =>
             {
@@ -84,8 +94,12 @@ namespace WebApiObjetos
             services.AddScoped<DbContext, ApplicationDBContext>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILocationRepository, LocationRepository>();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);//.AddXmlDataContractSerializerFormatters(); con esto si seteas en el header del request el tipo en que queres que te devuelva la info esto lo formatea solo
-                                                                                        //Accept tipo;  // tambien podes setear que formato queres que te devuelta cada método poniendo [Produces("formato")]
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());// con esto le aplicas verificación de antiforgery a todos los métodos "no seguros" de tu aplicación.
+                options.Filters.Add(new RequireHttpsAttribute()); // idem pero https
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);//.AddXmlDataContractSerializerFormatters(); con esto si seteas en el header del request el tipo en que queres que te devuelva la info esto lo formatea solo
+                                                                         //Accept tipo;  // tambien podes setear que formato queres que te devuelta cada método poniendo [Produces("formato")]
 
         }
 
@@ -107,6 +121,16 @@ namespace WebApiObjetos
             //throw new Exception("excepcion"); para demostrar como se genera la pagina de excepciones.
 
             app.UseHttpsRedirection();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto /// esto se usa si existe un load balancer que termina ssl por vos, esto forwardea los headers para que te funcione ssl igual
+            });
+
+            //avanzado.
+            app.UseHsts(options => options.MaxAge(days : 365).IncludeSubdomains());// cuando alguien se conecta con http el servidor recibe el request y despues lo redirecciona, con esto aplico a todos los subdominios que nisiquiera llegue la conexion http.
+            app.UseXXssProtection(options => options.EnabledWithBlockMode());// previene cross site scripting en ciertos browsers
+            app.UseXContentTypeOptions();// esto previene ataques en los que los browsers traten data de una página como un diferente tipo del que realmente es
+
             app.UseStaticFiles();
             app.UseCookiePolicy();
             logger.LogInformation("comienzo del Programa"); // loggeo el inicio, imprime por consola.
