@@ -52,7 +52,7 @@ namespace WebApiObjetos
             {
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters // esta es la clase que instancias para configurar como se valida el token
                 {
                     ClockSkew = TimeSpan.FromMinutes(5),
                     ValidateLifetime = true,
@@ -134,10 +134,11 @@ namespace WebApiObjetos
             app.UseStaticFiles();
             app.UseCookiePolicy();
             logger.LogInformation("comienzo del Programa"); // loggeo el inicio, imprime por consola.
-
+           
 
             //app.UseCors(); esto junto con lo otro comentado permiten cors.
             app.UseAuthentication();
+            // deberia agregar authorization si quiero tener diferentes permisos con los tokens generados.link:https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.1
 
             app.UseMvc(routes =>
             {

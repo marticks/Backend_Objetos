@@ -57,6 +57,9 @@ namespace WebApiObjetos.Controllers
             new Claim(JwtRegisteredClaimNames.Sub,"sass"),
             new Claim(ClaimTypes.Role,"admin"),
             new Claim("edad", "user.edad")
+            new Claim(ClaimTypes.Name, "John") //there are some claim types that enable functionalities in.NET.
+                                              //ClaimTypes.Name is the default claim type for the user’s name (User.Identity.Name).
+                                              //Another example is ClaimTypes.Role that will be checked if you use the Roles property in an Authorize attribute (e.g. [Authorize(Roles="Administrator")]).
     };
     //original.
     */
@@ -71,6 +74,7 @@ namespace WebApiObjetos.Controllers
                 audience: Resources.Audience,
                 claims: claimsss,
                 expires: DateTime.UtcNow.AddHours(Int32.Parse(Resources.Token_Duration)),
+                notBefore:DateTime.UtcNow, // a partir de cuando se puede usar el token
                 signingCredentials: cred
                 );
 
