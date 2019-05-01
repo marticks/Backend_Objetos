@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Swagger;
 using WebApiObjetos.Data;
 using WebApiObjetos.Models.Repositories;
 using WebApiObjetos.Models.Repositories.Interfaces;
@@ -45,6 +46,12 @@ namespace WebApiObjetos
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddSwaggerGen(c => 
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Swagger UI",Version= "v1.0" });
+            });
+
 
             services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnStr")));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // aca seteas la autenticación por default que queres que se utilice
@@ -145,6 +152,12 @@ namespace WebApiObjetos
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => 
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "swagger test");
             });
         }
     }

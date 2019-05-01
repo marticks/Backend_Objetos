@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/values", //cuando lo corres abre esta url por default
+      "launchUrl": "swagger", //cuando lo corres abre esta url por default
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development" //setea el ambiente en el que estas, el env.IsDevelopment se fija aca
       }

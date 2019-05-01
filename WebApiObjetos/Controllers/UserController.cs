@@ -16,6 +16,7 @@ using System.Resources;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApiObjetos.Controllers
 {
@@ -72,7 +73,7 @@ namespace WebApiObjetos.Controllers
             var token = new JwtSecurityToken(
                 issuer: Resources.Issuer,
                 audience: Resources.Audience,
-                claims: claimsss,
+                //claims: claimsss,
                 expires: DateTime.UtcNow.AddHours(Int32.Parse(Resources.Token_Duration)),
                 notBefore:DateTime.UtcNow, // a partir de cuando se puede usar el token
                 signingCredentials: cred
@@ -94,6 +95,7 @@ namespace WebApiObjetos.Controllers
 
         [Route("SignIn")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [AllowAnonymous]
         public async Task<IActionResult> SignIn([FromBody] User user)
         {
@@ -109,7 +111,7 @@ namespace WebApiObjetos.Controllers
 
 
         [Route("Delete")]
-        [ValidateAntiForgeryToken] // se ve que todas las forms tienen un token autogenerado, que necesitas validar de este lado con esta linea, asi evitas que otra página suba una form aca. 
+        //[ValidateAntiForgeryToken] // se ve que todas las forms tienen un token autogenerado, que necesitas validar de este lado con esta linea, asi evitas que otra página suba una form aca. 
         //[RequireHttps]//obliga a conectarse por https y sino te fuerza a hacerlo. habilitar firma ssl en properties
         [HttpDelete,Authorize]
         public async Task<IActionResult> DeleteUser([FromBody] User user)
