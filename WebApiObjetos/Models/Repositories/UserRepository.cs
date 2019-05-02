@@ -23,9 +23,8 @@ namespace WebApiObjetos.Models.Repositories
             try
             {
                 var result = await applicationDbContext.Set<User>().
-                    Where(x => x.UserName.Equals(user.UserName)).FirstOrDefaultAsync<User>();
+                    Where(x => x.UserName.Equals(user.UserName) && x.Password.Equals(user.Password)).FirstOrDefaultAsync<User>();
 
-                applicationDbContext.SaveChanges();
                 return result;
             }
             catch (Exception e)
@@ -35,6 +34,49 @@ namespace WebApiObjetos.Models.Repositories
             //myContext.HugeEntity.Select(entity => new { entity.FirstName, entity.Address1 }); 
             //con esto podes realizar busquedas sin traerte todas las columnas de la tabla (anonymous types)
         }
+
+
+        public async Task<User> GetUserByUserName(string userName)
+        {
+            try
+            {
+                var result = await applicationDbContext.Set<User>().
+                    Where(x => x.UserName.Equals(userName)).FirstOrDefaultAsync<User>();
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            //myContext.HugeEntity.Select(entity => new { entity.FirstName, entity.Address1 }); 
+            //con esto podes realizar busquedas sin traerte todas las columnas de la tabla (anonymous types)
+        }
+
+
+
+
+        public async Task<string> GetRefreshTokenAsync(string refreshtoken)
+        {
+            try
+            {
+                var result = await applicationDbContext.Set<User>().
+                        Where(x => x.RefreshToken.Equals(refreshtoken)).FirstOrDefaultAsync<User>();
+
+                return result.RefreshToken;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task SaveRefreshToken(string userName , string refreshToken)
+        {
+
+
+        }
+
 
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WebApiObjetos.Data;
 using WebApiObjetos.Models.Entities;
@@ -56,13 +57,23 @@ namespace WebApiObjetos.Models.Repositories
 
         public void Update(TEntity dbEntity, TEntity entity)
         {
+            applicationDbContext.Update(entity);
+            applicationDbContext.SaveChanges();
+
             throw new NotImplementedException();
         }
 
-        TEntity IRepository<TEntity>.GetById(int id)
+        public async Task<TEntity> GetById(int id)
         {
-            var result = applicationDbContext.Find<TEntity>(id);
+            var result = await applicationDbContext.FindAsync<TEntity>(id);
             return result;
         }
+
+        public IList<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate) /// método base para busqueda dada una expresión
+        {
+                IList<TEntity> query = applicationDbContext.Set<TEntity>().Where(predicate).ToList();
+                return query;
+        }
+
     }
 }

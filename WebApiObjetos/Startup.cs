@@ -73,6 +73,20 @@ namespace WebApiObjetos
                     ValidIssuer = Resources.Issuer
 
                 };
+
+                options.Events = new JwtBearerEvents /// con esto si falla la autenticación y la causa era que se vencio el token retorna ese header.
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                        {
+                            context.Response.Headers.Add("Token-Expired", "true");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+
+
             }); // podes setear las otras formas de autenticación al hilo aca, con un . add ...
 
             services.AddAuthorization(options =>

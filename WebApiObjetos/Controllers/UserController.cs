@@ -31,65 +31,22 @@ namespace WebApiObjetos.Controllers
             this.userService = userService;
         }
 
-        [HttpPost] // Recordar usar estas notations+
+        [HttpPost]
         [Route("login"), AllowAnonymous]
-        public async Task<IActionResult> Login(User user)
+        public async Task<IActionResult> Login(LoginDTO user)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid Model State"); // supuestamente las excepciones son lentas, es mejor retornar el BadRequest.
 
-                //throw new InvalidOperationException("Invalid Model");esta excepcion es usada cuando se trata de realizar una operación con un objeto 
-                                                                     //con un estado invalido, creo que va bien como excepcion para este caso 
             var obtainedUser = await userService.Login(user);
-
 
             if (obtainedUser == null)
                 return Unauthorized();
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Resources.Encription_Key));
-            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            
-            /*
-            var claim = new[] {
-            new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-            // podes agregar otras sub y claims, es un arreglo, pero es mejor crear una claim nueva y chau.
-            new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub,"sass"),
-            new Claim(ClaimTypes.Role,"admin"),
-            new Claim("edad", "user.edad")
-            new Claim(ClaimTypes.Name, "John") //there are some claim types that enable functionalities in.NET.
-                                              //ClaimTypes.Name is the default claim type for the user’s name (User.Identity.Name).
-                                              //Another example is ClaimTypes.Role that will be checked if you use the Roles property in an Authorize attribute (e.g. [Authorize(Roles="Administrator")]).
-    };
-    //original.
-    */
-
-
-
-            var claimsss = new ClaimsIdentity(new[] {new Claim(JwtRegisteredClaimNames.Sub,user.UserName) },CookieAuthenticationDefaults.AuthenticationScheme); //para tener en cuenta.
-            var principal = new ClaimsPrincipal(claimsss);
-
-            var token = new JwtSecurityToken(
-                issuer: Resources.Issuer,
-                audience: Resources.Audience,
-                //claims: claimsss,
-                expires: DateTime.UtcNow.AddHours(Int32.Parse(Resources.Token_Duration)),
-                notBefore:DateTime.UtcNow, // a partir de cuando se puede usar el token
-                signingCredentials: cred
-                );
-
-            UserDTO userdto = new UserDTO()
-            {
-                UserName = user.UserName,
-                Password = user.Password,
-                Token = new JwtSecurityTokenHandler().WriteToken(token)
-        };
-
             //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, principal); agregado para mirar mañana
-            await HttpContext.SignOutAsync(JwtBearerDefaults.AuthenticationScheme);
+            //await HttpContext.SignOutAsync(JwtBearerDefaults.AuthenticationScheme);
 
-            return Ok(userdto);
+            return Ok(obtainedUser);
         }
 
 
@@ -97,7 +54,7 @@ namespace WebApiObjetos.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [AllowAnonymous]
-        public async Task<IActionResult> SignIn([FromBody] User user)
+        public async Task<IActionResult> SignIn([FromBody] UserDTO user)
         {
             if (!ModelState.IsValid)
                 throw new InvalidOperationException("Invaid Model");
@@ -114,7 +71,7 @@ namespace WebApiObjetos.Controllers
         //[ValidateAntiForgeryToken] // se ve que todas las forms tienen un token autogenerado, que necesitas validar de este lado con esta linea, asi evitas que otra página suba una form aca. 
         //[RequireHttps]//obliga a conectarse por https y sino te fuerza a hacerlo. habilitar firma ssl en properties
         [HttpDelete,Authorize]
-        public async Task<IActionResult> DeleteUser([FromBody] User user)
+        public async Task<IActionResult> DeleteUser([FromBody] LoginDTO user)  /// Me parece bien que para borrar el usuario ademas del token requiera usuario y contraseña
         {
             var context = HttpContext.User; // con esto accedes a las claims
             if (!ModelState.IsValid)
@@ -126,7 +83,19 @@ namespace WebApiObjetos.Controllers
         }
 
 
+        [HttpPost]
+        [Route("Refresh")]
+        //Se almacena el refresh token junto con el usuario, esto obliga a que solo haya una sesión iniciada al a vez, ya que hay un solo refresh token
+        public async Task<IActionResult> RefreshToken(string token, string refreshToken) // le envio el token en el body para que pueda extraer las claims de ahi.
+        {
+            if (!ModelState.IsValid)
+                throw new InvalidOperationException("Invaid Model");
 
+            var newTokens = await userService.RefreshTokens(token, refreshToken);
+
+            return Ok(newTokens);
+
+        }
 
 
     }

@@ -128,6 +128,6 @@
   </data>
   <data name="Token_Duration" xml:space="preserve">
     <value>1</value>
-    <comment>parse to int</comment>
+    <comment>parse to int, hours</comment>
   </data>
 </root>
