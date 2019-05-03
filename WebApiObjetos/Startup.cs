@@ -176,3 +176,112 @@ namespace WebApiObjetos
         }
     }
 }
+
+/* public class RepositoryBase<T> : IRepository<T> where T : class
+    {
+
+        public virtual IList<T> GetAll()
+        {
+
+            using (var context = new SupervielleChecksEntities())
+            {
+                IList<T> query = context.Set<T>().ToList();
+                return query;
+            }
+        }
+
+        public virtual IList<T> FindBy(Expression<Func<T, bool>> predicate)
+        {
+            using (var context = new SupervielleChecksEntities())
+            {
+                IList<T> query = context.Set<T>().Where(predicate).ToList();
+                return query;
+            }
+        }
+
+        public virtual async Task<IList<T>> FindByAsync(Expression<Func<T, bool>> predicate)
+        {
+            using (var context = new SupervielleChecksEntities())
+            {
+                IList<T> query = await context.Set<T>().Where(predicate).ToListAsync();
+                return query;
+            }
+        }
+
+        public virtual bool Any(Expression<Func<T, bool>> predicate)
+        {
+            using (var context = new SupervielleChecksEntities())
+            {
+                return context.Set<T>().Any(predicate);
+            }
+
+        }
+
+        public virtual T Add(T entity)
+        {            
+            using (var context = new SupervielleChecksEntities())
+            {
+                context.Set<T>().Add(entity);
+                context.SaveChanges();
+            }
+            return entity;
+        }
+
+        public virtual T GetById(long id)
+        {
+            T entityDb = null;
+
+                using (var context = new SupervielleChecksEntities())
+                {
+                    entityDb = context.Set<T>().Find(id);
+                }
+
+
+                return entityDb;
+        }
+
+        public async Task<T> GetByIdAsync(long id)
+        {
+            T entityDb = null;
+
+            using (var context = new SupervielleChecksEntities())
+            {
+                entityDb = await context.Set<T>().FindAsync(id);
+            }
+
+            return entityDb;
+        }
+
+        public virtual void Delete(long id)
+        {
+            using (var context = new SupervielleChecksEntities())
+            {                
+                var entityDb = GetById(id);
+
+                // Validate if Id exists
+                if (entityDb!=null)
+                {
+                    context.Entry(entityDb).State = System.Data.Entity.EntityState.Deleted;
+                    context.SaveChanges();
+                }                
+            }
+        }
+
+        public virtual void Edit(T entity)
+        {
+            using (var context = new SupervielleChecksEntities())
+            {
+                context.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
+
+        public virtual void Save()
+        {
+            using (var context = new SupervielleChecksEntities())
+            {
+                context.SaveChanges();
+            }
+
+        }
+    }*/
