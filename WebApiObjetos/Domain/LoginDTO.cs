@@ -11,7 +11,7 @@ namespace WebApiObjetos.Domain
     {
         [DataMember()]
         [Required(ErrorMessage = "UserName cannot be empty")]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
         [DataMember()]
         [Required(ErrorMessage = "PassWord cannot be empty")]

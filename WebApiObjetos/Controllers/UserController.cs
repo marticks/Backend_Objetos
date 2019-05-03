@@ -77,21 +77,22 @@ namespace WebApiObjetos.Controllers
             if (!ModelState.IsValid)
                 throw new InvalidOperationException("Invaid Model");
 
-            await userService.DeleteUser(user);
+            if (await userService.DeleteUser(user))
+                return Ok("Su usuario ha sido eliminado exitosamente");
 
-            return Ok("Su usuario ha sido eliminado exitosamente");
+            return Forbid("usuario y contraseña incorrectos");
         }
 
 
         [HttpPost]
         [Route("Refresh")]
         //Se almacena el refresh token junto con el usuario, esto obliga a que solo haya una sesión iniciada al a vez, ya que hay un solo refresh token
-        public async Task<IActionResult> RefreshToken(string token, string refreshToken) // le envio el token en el body para que pueda extraer las claims de ahi.
+        public async Task<IActionResult> RefreshToken([FromBody]TokensDTO tokens) // le envio el token en el body para que pueda extraer las claims de ahi.
         {
             if (!ModelState.IsValid)
                 throw new InvalidOperationException("Invaid Model");
 
-            var newTokens = await userService.RefreshTokens(token, refreshToken);
+            var newTokens = await userService.RefreshTokens(tokens.Token, tokens.RefreshToken);
 
             return Ok(newTokens);
 

@@ -73,7 +73,6 @@ namespace WebApiObjetos
                     ValidIssuer = Resources.Issuer
 
                 };
-
                 options.Events = new JwtBearerEvents /// con esto si falla la autenticación y la causa era que se vencio el token retorna ese header.
                 {
                     OnAuthenticationFailed = context =>
@@ -88,7 +87,7 @@ namespace WebApiObjetos
 
 
             }); // podes setear las otras formas de autenticación al hilo aca, con un . add ...
-
+/*
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", adminoptions =>
@@ -97,6 +96,7 @@ namespace WebApiObjetos
                  });
 
             });
+            */
             /*
             services.AddCors(options =>
             {
@@ -117,8 +117,8 @@ namespace WebApiObjetos
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddMvc(options =>
             {
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());// con esto le aplicas verificación de antiforgery a todos los métodos "no seguros" de tu aplicación.
-                options.Filters.Add(new RequireHttpsAttribute()); // idem pero https
+                //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());// con esto le aplicas verificación de antiforgery a todos los métodos "no seguros" de tu aplicación.
+                //options.Filters.Add(new RequireHttpsAttribute()); // idem pero https
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);//.AddXmlDataContractSerializerFormatters(); con esto si seteas en el header del request el tipo en que queres que te devuelva la info esto lo formatea solo
                                                                          //Accept tipo;  // tambien podes setear que formato queres que te devuelta cada método poniendo [Produces("formato")]
 
