@@ -11,6 +11,7 @@ namespace WebApiObjetos.Data
     {
         public DbSet<User> Users { get; set;} // DBSet representa una tabla
         public DbSet<Location> Locations { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
@@ -26,6 +27,5 @@ namespace WebApiObjetos.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        //public DbSet<WebApiObjetos.Models.Entities.Users> User { get; set; }
     }
 }

@@ -6,8 +6,9 @@ using WebApiObjetos.Models.Entities;
 
 namespace WebApiObjetos.Models.Repositories.Interfaces
 {
-    public interface ILocationRepository : IRepository<Location>
+    public interface IImageRepository : IRepository<Image>
     {
-         Task<bool> deleteLocation(int userId, int LocationId);
+
+
     }
 }

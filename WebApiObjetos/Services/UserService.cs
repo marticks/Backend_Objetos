@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -28,74 +29,12 @@ namespace WebApiObjetos.Services
             this.userRepo = userRepo;
         }
 
-
-        public async Task<bool> DeleteUser(LoginDTO user)
-        {
-            /*
-            int id = 1;
-            user = userRepo.GetById(id); esto era una prueba y funciona bien el getbyId
-            */
-
-            var userEntity = new User
-            {
-                UserName = user.Username,
-                Password = user.Password
-            };
-
-            var result = await userRepo.GetUser(userEntity);
-
-            if (result != null)
-            { await userRepo.Delete(result);
-                return true;
-            }
-            return false;
-        }
-
-
-        public async Task<UserDTO> Login(LoginDTO user)
-        {
-            var userEntity = new User
-            {
-                UserName = user.Username,
-                Password = user.Password
-            };
-
-            var result = await userRepo.GetUser(userEntity);
-
-            if (result == null)
-                return null;
-
-            var token = GenerateToken(result.ToDto());
-
-            var refreshToken = GenerateRefreshToken();
-
-            //userRepo.Update
-            //guardar el refresh Token
-
-            UserDTO userDto = new UserDTO()
-            {
-                UserName = user.Username,
-                Password = user.Password,
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                RefreshToken = refreshToken
-            };
-
-            return userDto;
-        }
-
-
+        
         public async Task<bool> SignIn(UserDTO user)
         {
-            //usar "sal" y un algoritmo de encriptado, nunca desencriptar las claves, correr al menos 1000 veces el encriptado
-            //pasar a alguna codificacion para no depender de la maquina del pibe o y eso 
-            //prior to digesting, perform string-to-byte sequence translation using a fixed encoding, preferably UTF-8.
-            // By encoding our digested sequence of bytes in BASE64, we will make sure that the output byte sequence represents a valid, displayable, US-ASCII character string. 
-            //So we will be able to safely translate the BASE64-encoded byte sequence into a character string specifying US-ASCII as the encoding.
+            var existingUser = await userRepo.FindBy(x => x.UserName == user.UserName);
 
-            var exitinUser = userRepo.FindBy(x => x.UserName == user.UserName); /// probar si funciona, si lo hace no hay necesidad del método de abajo y se puede borrar.
-
-            var existingUser = await userRepo.GetUserByUserName(user.UserName);
-            if (existingUser != null)
+            if (existingUser.Count != 0)
                 return false;
 
             await userRepo.Add(user.ToEntity());
@@ -103,41 +42,60 @@ namespace WebApiObjetos.Services
         }
 
 
-        public async Task<UserDTO> RefreshTokens(string token, string refreshToken)
+        public async Task<UserDTO> Login(UserDTO user)
         {
 
-            var principal = GetPrincipalFromExpiredToken(token);
-            var username = principal.Identity.Name;
-            var savedRefreshToken = await userRepo.GetRefreshTokenAsync(username);
+            var result = (await userRepo.FindBy(x => x.UserName == user.UserName && x.Password == user.Password)).First();
 
-            if (savedRefreshToken != refreshToken)
-                throw new SecurityTokenException("Invalid refresh token");
+            if (result == null)
+                return null;
 
-            var user = new UserDTO
+            var token = GenerateToken(result);
+
+            UserDTO userDto = new UserDTO()
             {
-                UserName = principal.Claims.Where(x => x.Type == "sub").First().Value // extraigo el username de la claim, tendría que cambiar las claims despues para que una sea el nombre
+                UserName = user.UserName,
+                Password = user.Password,
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
             };
+        
+            return userDto;
+        }
+        
 
-            var newJwtToken = GenerateToken(user);
-            var newRefreshToken = GenerateRefreshToken();
-
-            newJwtToken.Claims.Where(x => x.Type == "edad");
-
-            //DeleteRefreshToken(username, refreshToken); simanejara muchos refresh tokens debería borrar el anterior, como aca manejo uno solo lo piso
-            await userRepo.SaveRefreshToken(username, newRefreshToken); //idem
-
-            return new UserDTO
+        private JwtSecurityToken GenerateToken(User user)
+        {
+            try
             {
-                Token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
-                RefreshToken = newRefreshToken
-            };
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Resources.Encription_Key));
+                var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                // cuando la base tenga mas datos importantes tipo version, edad , etc, eso se mete en una claim para que no tenga que enviar esa info en cada request de los servicios
+                var claim = (new[] {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role,"admin"),
+                new Claim("UserId", user.Id.ToString())
+            });
 
+                return new JwtSecurityToken(
+                            issuer: Resources.Issuer,
+                            audience: Resources.Audience,
+                            claims: claim,
+                            expires: DateTime.UtcNow.AddHours(Int32.Parse(Resources.Token_Duration)),//está puesto una hora para el token, se cambia en la tabla resources
+                            notBefore: DateTime.UtcNow, // a partir de cuando se puede usar el token
+                            signingCredentials: cred
+                                            );
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
 
 
-
-        //este método se usa para extraer las claims del token vencido.
+        //este método se usa para extraer las claims del token vencido. // no se usa pero puede resultar util para despues
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -160,53 +118,6 @@ namespace WebApiObjetos.Services
             return principal;
         }
 
-        private JwtSecurityToken GenerateToken(UserDTO user)
-        {
-            try
-            {
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Resources.Encription_Key));
-                var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                // cuando la base tenga mas datos importantes tipo version, edad , etc, eso se mete en una claim
-                var claim =(new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                // podes agregar otras sub y claims, es un arreglo, pero es mejor crear una claim nueva y chau.
-                new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub,"sass"),
-                new Claim(ClaimTypes.Role,"admin"),
-                new Claim("edad", "user.edad")
-                //new Claim(ClaimTypes.Name, "John") //there are some claim types that enable functionalities in.NET.
-                                              //ClaimTypes.Name is the default claim type for the user’s name (User.Identity.Name).
-                                              //Another example is ClaimTypes.Role that will be checked if you use the Roles property in an Authorize attribute (e.g. [Authorize(Roles="Administrator")]).
-            });
-
-                //var principal = new ClaimsPrincipal(claim); en algunos tutoriales usaban esto, pero no puedo usar claims asi y si lo cambio no las puedo asignar en el jwtsecurity token
-
-                return new JwtSecurityToken(
-                            issuer: Resources.Issuer,
-                            audience: Resources.Audience,
-                            claims: claim,
-                            expires: DateTime.UtcNow.AddHours(Int32.Parse(Resources.Token_Duration)),
-                            notBefore: DateTime.UtcNow, // a partir de cuando se puede usar el token
-                            signingCredentials: cred
-                                            );
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        private string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
 
     }
 }

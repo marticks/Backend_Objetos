@@ -8,11 +8,13 @@ namespace WebApiObjetos.Models.Repositories.Interfaces
 {
     public interface IRepository<TEntity>
     {
-        IEnumerable<TEntity> GetAll();
+        Task<IEnumerable<TEntity>> GetAll();
         Task<TEntity> GetById(int id);
-        Task Add(TEntity entity);
-        void Update(TEntity dbEntity, TEntity entity);
+        Task<TEntity> Add(TEntity entity);
+        Task Update(TEntity entity);
         Task Delete(TEntity entity);
-        IList<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate);
+        Task<bool> DeleteById(int id);
+        Task<IList<TEntity>> FindBy(Expression<Func<TEntity, bool>> predicate);
+        Task<bool> Any(Expression<Func<TEntity, bool>> predicate);
     }
 }

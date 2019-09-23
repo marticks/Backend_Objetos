@@ -11,6 +11,7 @@ namespace WebApiObjetos.Domain
     [DataContract()]
     public class UserDTO
     {
+
         [DataMember()]
         [Required(ErrorMessage = "UserName cannot be empty")]
         public string UserName { get; set; }
@@ -24,11 +25,7 @@ namespace WebApiObjetos.Domain
 
         [DataMember()]
         public string Token { get; set; }
-
-        [DataMember()]
-        public string RefreshToken { get; set; }
-
-
+        
         public User ToEntity()
         {
             return new User
@@ -36,9 +33,7 @@ namespace WebApiObjetos.Domain
                 UserName = this.UserName,
                 Password = this.Password,
                 Email = this.Email,
-                RefreshToken = this.RefreshToken
             };
-
         }
     }
 }

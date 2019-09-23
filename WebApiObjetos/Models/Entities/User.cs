@@ -17,20 +17,14 @@ namespace WebApiObjetos.Models.Entities
 
         public string Email { get; set; }
 
-        public string RefreshToken { get; set; }
-
-
-        public UserDTO ToDto()
+        public UserDTO toDto()
         {
             return new UserDTO
             {
                 UserName = this.UserName,
                 Password = this.Password,
                 Email = this.Email,
-                RefreshToken = this.RefreshToken
             };
-
         }
-
     }
 }

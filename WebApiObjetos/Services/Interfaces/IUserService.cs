@@ -10,13 +10,9 @@ namespace WebApiObjetos.Services.Interfaces
 {
     public interface IUserService
     {
-
-        Task<UserDTO> Login(LoginDTO user);
+        Task<UserDTO> Login(UserDTO user);
 
         Task<bool> SignIn(UserDTO user);
 
-        Task<bool> DeleteUser(LoginDTO user);
-
-        Task<UserDTO> RefreshTokens(string token, string refreshToken);
     }
 }

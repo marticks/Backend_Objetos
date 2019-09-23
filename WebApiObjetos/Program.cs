@@ -24,7 +24,5 @@ namespace WebApiObjetos
                 {
                     options.AddServerHeader = false;
                 });
-
-        //kestrel es el default web server, esta bueno no devolver que server estas corriendo para no dar info extra
     }
 }

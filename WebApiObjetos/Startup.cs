@@ -51,13 +51,11 @@ namespace WebApiObjetos
             {
                 c.SwaggerDoc("v1", new Info { Title = "Swagger UI",Version= "v1.0" });
             });
-
-
+            
             services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnStr")));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // aca seteas la autenticación por default que queres que se utilice
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters // esta es la clase que instancias para configurar como se valida el token
                 {
@@ -86,7 +84,7 @@ namespace WebApiObjetos
                 };
 
 
-            }); // podes setear las otras formas de autenticación al hilo aca, con un . add ...
+            }); // podes setear las otras formas de autenticación aca(por ejemplo con cookie)
 /*
             services.AddAuthorization(options =>
             {
@@ -96,8 +94,10 @@ namespace WebApiObjetos
                  });
 
             });
+            se puede setear distintos roles como admin y usuario con esto
             */
-            /*
+
+            
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -107,20 +107,17 @@ namespace WebApiObjetos
                       .AllowCredentials()
                 .Build());
             });
-            esto acepta requests de cualquier tipo de cualquier página, no es seguro , pero podes cambiar el allow anyOrigin por WithOrigins("nombre origen")
-            */
+            //esto acepta requests de cualquier tipo de cualquier página, no es seguro , pero podes cambiar el allow anyOrigin por WithOrigins("nombre origen")
 
             services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<DbContext, ApplicationDBContext>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddMvc(options =>
             {
-                //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());// con esto le aplicas verificación de antiforgery a todos los métodos "no seguros" de tu aplicación.
-                //options.Filters.Add(new RequireHttpsAttribute()); // idem pero https
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);//.AddXmlDataContractSerializerFormatters(); con esto si seteas en el header del request el tipo en que queres que te devuelva la info esto lo formatea solo
-                                                                         //Accept tipo;  // tambien podes setear que formato queres que te devuelta cada método poniendo [Produces("formato")]
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
         }
 
@@ -139,9 +136,6 @@ namespace WebApiObjetos
                 app.UseHsts();
             }
 
-            //throw new Exception("excepcion"); para demostrar como se genera la pagina de excepciones.
-
-            app.UseHttpsRedirection();
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto /// esto se usa si existe un load balancer que termina ssl por vos, esto forwardea los headers para que te funcione ssl igual
@@ -151,6 +145,7 @@ namespace WebApiObjetos
             app.UseHsts(options => options.MaxAge(days : 365).IncludeSubdomains());// cuando alguien se conecta con http el servidor recibe el request y despues lo redirecciona, con esto aplico a todos los subdominios que nisiquiera llegue la conexion http.
             app.UseXXssProtection(options => options.EnabledWithBlockMode());// previene cross site scripting en ciertos browsers
             app.UseXContentTypeOptions();// esto previene ataques en los que los browsers traten data de una página como un diferente tipo del que realmente es
+            
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -159,8 +154,7 @@ namespace WebApiObjetos
 
             //app.UseCors(); esto junto con lo otro comentado permiten cors.
             app.UseAuthentication();
-            // deberia agregar authorization si quiero tener diferentes permisos con los tokens generados.link:https://docs.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-2.1
-
+           
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -168,6 +162,8 @@ namespace WebApiObjetos
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
+
+            //para usar swagger
             app.UseSwagger();
             app.UseSwaggerUI(c => 
             {
@@ -177,111 +173,3 @@ namespace WebApiObjetos
     }
 }
 
-/* public class RepositoryBase<T> : IRepository<T> where T : class
-    {
-
-        public virtual IList<T> GetAll()
-        {
-
-            using (var context = new SupervielleChecksEntities())
-            {
-                IList<T> query = context.Set<T>().ToList();
-                return query;
-            }
-        }
-
-        public virtual IList<T> FindBy(Expression<Func<T, bool>> predicate)
-        {
-            using (var context = new SupervielleChecksEntities())
-            {
-                IList<T> query = context.Set<T>().Where(predicate).ToList();
-                return query;
-            }
-        }
-
-        public virtual async Task<IList<T>> FindByAsync(Expression<Func<T, bool>> predicate)
-        {
-            using (var context = new SupervielleChecksEntities())
-            {
-                IList<T> query = await context.Set<T>().Where(predicate).ToListAsync();
-                return query;
-            }
-        }
-
-        public virtual bool Any(Expression<Func<T, bool>> predicate)
-        {
-            using (var context = new SupervielleChecksEntities())
-            {
-                return context.Set<T>().Any(predicate);
-            }
-
-        }
-
-        public virtual T Add(T entity)
-        {            
-            using (var context = new SupervielleChecksEntities())
-            {
-                context.Set<T>().Add(entity);
-                context.SaveChanges();
-            }
-            return entity;
-        }
-
-        public virtual T GetById(long id)
-        {
-            T entityDb = null;
-
-                using (var context = new SupervielleChecksEntities())
-                {
-                    entityDb = context.Set<T>().Find(id);
-                }
-
-
-                return entityDb;
-        }
-
-        public async Task<T> GetByIdAsync(long id)
-        {
-            T entityDb = null;
-
-            using (var context = new SupervielleChecksEntities())
-            {
-                entityDb = await context.Set<T>().FindAsync(id);
-            }
-
-            return entityDb;
-        }
-
-        public virtual void Delete(long id)
-        {
-            using (var context = new SupervielleChecksEntities())
-            {                
-                var entityDb = GetById(id);
-
-                // Validate if Id exists
-                if (entityDb!=null)
-                {
-                    context.Entry(entityDb).State = System.Data.Entity.EntityState.Deleted;
-                    context.SaveChanges();
-                }                
-            }
-        }
-
-        public virtual void Edit(T entity)
-        {
-            using (var context = new SupervielleChecksEntities())
-            {
-                context.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-                context.SaveChanges();
-            }
-        }
-
-        public virtual void Save()
-        {
-            using (var context = new SupervielleChecksEntities())
-            {
-                context.SaveChanges();
-            }
-
-        }
-    }*/

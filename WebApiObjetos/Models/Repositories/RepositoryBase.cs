@@ -19,17 +19,33 @@ namespace WebApiObjetos.Models.Repositories
             this.applicationDbContext = dbContext;
         }
 
-        public async virtual Task Add(TEntity entity)
+
+        public async Task<TEntity> Add(TEntity entity)
         {
             try
             {
                 applicationDbContext.Add<TEntity>(entity);
-                await applicationDbContext.SaveChangesAsync();//debería usar savechanges async ? rta:tengo que hacer todo asyncrono hasta el controller y ya funca
+                await applicationDbContext.SaveChangesAsync();
+                return entity;
             }
             catch (Exception e)
             {
                 throw e;
             }
+        }
+
+
+        public async Task<bool> DeleteById(int id)
+        {
+            var entityToDelete = GetById(id);
+            
+            if (entityToDelete != null)
+            {
+                applicationDbContext.Remove(entityToDelete);
+                await applicationDbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task Delete(TEntity entity)
@@ -45,35 +61,37 @@ namespace WebApiObjetos.Models.Repositories
             }
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAll()
         {
-            /* var Users = applicationDbContext.Users.ToList();
-              applicationDbContext.Model.
-             return Users;
-              //dbContext
-              */
-            throw new NotImplementedException();
+            return await applicationDbContext.Set<TEntity>().ToListAsync();
         }
 
-        public void Update(TEntity dbEntity, TEntity entity)
+        public async Task Update(TEntity entity)
         {
-            applicationDbContext.Update(entity);
-            applicationDbContext.SaveChanges();
-
-            throw new NotImplementedException();
+            try
+            {
+                applicationDbContext.Update(entity);
+                await applicationDbContext.SaveChangesAsync();
+            }
+            catch (Exception e) { }
         }
 
         public async Task<TEntity> GetById(int id)
         {
-            var result = await applicationDbContext.FindAsync<TEntity>(id);
-            return result;
+            return await applicationDbContext.FindAsync<TEntity>(id);
         }
 
-        public IList<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate) /// método base para busqueda dada una expresión
+        public async Task<IList<TEntity>> FindBy(Expression<Func<TEntity, bool>> predicate) /// método base para busqueda dada una expresión
         {
-                IList<TEntity> query = applicationDbContext.Set<TEntity>().Where(predicate).ToList();
-                return query;
+            IList<TEntity> query = await applicationDbContext.Set<TEntity>().Where(predicate).ToListAsync();
+            return query;
+        }
+
+        public async Task<bool> Any(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await applicationDbContext.Set<TEntity>().AnyAsync(predicate);
         }
 
     }
 }
+
