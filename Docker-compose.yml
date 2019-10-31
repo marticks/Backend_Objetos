@@ -11,5 +11,11 @@ services:
       MSSQL_PID: Developer
     volumes:
       - "InfoDB:/var/opt/mssql"
+  server:
+    build:
+      context: ./WebApiObjetos
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
 volumes:
   InfoDB:
